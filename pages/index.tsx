@@ -8,9 +8,26 @@ import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home({ jokes }: any) {
+interface Props {
+  jokes: {
+    categories: [];
+    created_at: string;
+    icon_url: string;
+    id: string;
+    updated_at: string;
+    url: string;
+    value: string;
+  };
+}
 
-  const { value, created_at } = jokes;
+export default function Home(props: Props) {
+  const [joke, setJoke] = useState(props.jokes);
+
+  const fetchData = () => {
+    const res = fetch(`https://api.chucknorris.io/jokes/random`)
+      .then((res) => res.json())
+      .then((data) => setJoke(data));
+  };
 
   return (
     <>
@@ -21,15 +38,23 @@ export default function Home({ jokes }: any) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={inter.className} key={jokes.id}>
+        <div className={inter.className} key={joke.id}>
           <div className={styles.grid}>
             <h1 className={inter.className}>Random Chuck Norris Jokes</h1>
             <Image height={70} width={70} src={icon} alt="chuk norises" />
           </div>
-          <p className={styles.description}>{value}</p>
-          <p style={{textAlign:'center', marginBottom:'13px'}}> <span style={{fontSize: '22px'}}>Created at :</span> {moment(`${created_at}`).format("MMMM Do YYYY hh:mm:ss")}</p>
+          <p className={styles.description}>{joke.value}</p>
+          <p style={{ textAlign: "center", marginBottom: "13px" }}>
+            {" "}
+            <span style={{ fontSize: "22px" }}>Created at :</span>{" "}
+            {moment(`${joke.created_at}`).format(
+              "MMMM Do YYYY hh:mm:ss"
+            )}
+          </p>
         </div>
-        <button onClick={()=>location.reload()} className={styles.button}>Next Joke</button>
+        <button onClick={fetchData} className={styles.button}>
+          Next Joke
+        </button>
       </main>
     </>
   );
